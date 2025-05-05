@@ -28,8 +28,8 @@
             margin-bottom: 10px;
         }
         .logo-img {
-            max-width: 60px;
-            height: 60px;
+            max-width: 200px;
+            height: auto;
         }
         .navbar-toggler {
             border: none;
@@ -125,7 +125,7 @@
                         <a class="nav-link active" href="#">E-Library</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" data-toggle="modal" data-target="#contactModal">Contact Us</a>
+                        <a class="nav-link" href="#" data-toggle="modal" data-target="#contactModal">Contact</a>
                     </li>
                 </ul>
             </div>
@@ -136,7 +136,7 @@
     <header class="header-bg text-white text-center py-3">
         <div class="d-flex justify-content-center align-items-center">
             <img src="logo.png" alt="Church E-Library Logo" class="logo-img mr-3">
-            <h1 class="mb-0">Kmtc Nakuru Cu E-Library</h1>
+            <h1 class="mb-0">Church E-Library</h1>
         </div>
     </header>
 
@@ -215,7 +215,12 @@
         const booksPerPage = 9;
 
         fetch('books.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch books.json: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 books = data;
                 const categories = [...new Set(data.map(book => book.category))];
@@ -229,7 +234,10 @@
                 });
                 filterBooks();
             })
-            .catch(error => console.error('Error loading books:', error));
+            .catch(error => {
+                console.error('Error loading books:', error);
+                document.getElementById('bookList').innerHTML = '<p>Error loading books. Please check if books.json is correctly hosted.</p>';
+            });
 
         document.querySelector('.list-group').addEventListener('click', (e) => {
             if (e.target.tagName === 'A') {
